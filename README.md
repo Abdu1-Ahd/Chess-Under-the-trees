@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.png" alt="Chess Under The Tree Logo" width="160" height="160" />
+</p>
+
 # Chess Under The Tree
 
 ![CI](https://img.shields.io/badge/CI-passing-success?style=flat-square) ![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-blue?style=flat-square) ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
