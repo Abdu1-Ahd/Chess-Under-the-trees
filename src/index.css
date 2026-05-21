@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --wood-dark:       #3B1F0A;
+  --wood-medium:     #6B3A1F;
+  --wood-light:      #A0522D;
+  --wood-highlight:  #C8864A;
+  --wood-grain-url:  url('/textures/wood-dark.jpg');
+  --text-carved:     #F5DEB3;
+  --text-dim:        #C4A882;
+  --shadow-deep:     0 8px 24px rgba(0,0,0,0.7);
+  --shadow-button:   0 4px 12px rgba(0,0,0,0.5);
+  --font-display:    'Cinzel', serif;
+  --font-body:       'Crimson Text', serif;
+  --border-radius:   6px;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.wooden-panel {
+  background-image: var(--wood-grain-url);
+  background-size: cover;
+  background-color: var(--wood-dark);
+  border: 3px solid var(--wood-light);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-deep), inset 0 1px 0 rgba(255,255,255,0.1);
+  padding: 24px;
+  color: var(--text-carved);
+  font-family: var(--font-display);
+}
