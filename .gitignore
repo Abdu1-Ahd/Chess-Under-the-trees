@@ -9,3 +9,23 @@ build/
 .idea/
 *.suo
 *.user
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Public generated large binaries (generated via scripts)
+public/stockfish/
+public/textures/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
