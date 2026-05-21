@@ -23,7 +23,11 @@ html, body, #root {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #000;
+  background-color: #a8c8a0;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 /* ── Wooden Panel ── */
