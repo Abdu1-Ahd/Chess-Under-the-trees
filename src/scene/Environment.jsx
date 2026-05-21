@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
 // Helper to safely load textures or use a fallback color
@@ -44,6 +45,20 @@ export function FallbackMaterial({ url, normalUrl, fallbackColor, roughness, met
 }
 
 export default function Environment() {
+  // Wind animation ref for foliage
+  const foliageRefs = useRef([])
+
+  useFrame((state) => {
+    const t = state.clock.elapsedTime
+    foliageRefs.current.forEach((ref, i) => {
+      if (!ref) return
+      const freq = 0.3 + i * 0.07
+      const amp = 0.008 + i * 0.002
+      ref.rotation.x = Math.sin(t * freq) * amp
+      ref.rotation.z = Math.cos(t * freq * 0.7) * amp * 0.6
+    })
+  })
+
   return (
     <group>
       {/* Lighting */}
@@ -62,6 +77,9 @@ export default function Environment() {
         shadow-camera-top={15}
         shadow-camera-bottom={-15}
       />
+
+      {/* Scene Fog for depth */}
+      <fog attach="fog" args={['#a8c8a0', 20, 80]} />
       
       {/* Dappled light effect */}
       {[
@@ -129,6 +147,60 @@ export default function Environment() {
             normalUrl="/textures/bark-normal.jpg"
             fallbackColor="#3B2010"
             roughness={0.85}
+          />
+        </mesh>
+      ))}
+
+      {/* Main Tree Foliage Canopy — layered spheres for depth */}
+      {[
+        { pos: [-9, 15, -3.5], scale: [5, 4, 5] },
+        { pos: [-8, 18, -2.5], scale: [3.5, 3, 3.5] },
+        { pos: [-11, 16, -4], scale: [3, 3.5, 3] },
+        { pos: [-9.5, 20, -3], scale: [2.5, 2.5, 2.5] },
+        { pos: [-7.5, 14, -2], scale: [2.5, 2, 2.5] },
+      ].map((leaf, i) => (
+        <mesh
+          key={`leaf-${i}`}
+          ref={el => foliageRefs.current[i] = el}
+          position={leaf.pos}
+          scale={leaf.scale}
+          castShadow
+        >
+          <sphereGeometry args={[1, 10, 10]} />
+          <meshStandardMaterial
+            color={i % 2 === 0 ? '#2d6e2b' : '#3a8a38'}
+            roughness={0.95}
+            metalness={0}
+            transparent
+            opacity={0.92}
+          />
+        </mesh>
+      ))}
+
+      {/* Second background tree (right side, distant) */}
+      <mesh position={[12, 4, -8]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.5, 0.8, 8, 10]} />
+        <FallbackMaterial url="/textures/bark-diffuse.jpg" fallbackColor="#3B2010" roughness={0.85} />
+      </mesh>
+      {[
+        { pos: [12, 12, -8], scale: [3.5, 3, 3.5] },
+        { pos: [13, 14, -7.5], scale: [2.5, 2.5, 2.5] },
+        { pos: [11, 13, -9], scale: [2.5, 2, 2.5] },
+      ].map((leaf, i) => (
+        <mesh
+          key={`leaf2-${i}`}
+          ref={el => foliageRefs.current[5 + i] = el}
+          position={leaf.pos}
+          scale={leaf.scale}
+          castShadow
+        >
+          <sphereGeometry args={[1, 8, 8]} />
+          <meshStandardMaterial
+            color={i % 2 === 0 ? '#254d24' : '#2d6e2b'}
+            roughness={0.95}
+            metalness={0}
+            transparent
+            opacity={0.88}
           />
         </mesh>
       ))}

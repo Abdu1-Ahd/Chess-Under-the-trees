@@ -64,3 +64,5 @@ export const useGameStore = create((set) => ({
   tickTimer: () => {},
   resetGame: () => set({ screen: 'menu' }),
 }))
+
+export default useGameStore

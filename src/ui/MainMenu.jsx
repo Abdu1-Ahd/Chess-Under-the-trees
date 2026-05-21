@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import useGameStore from '../store/useGameStore'
 import WoodenButton from './WoodenButton'
+import SettingsPanel from './SettingsPanel'
 
 export default function MainMenu() {
   const startGame = useGameStore(s => s.startGame)
@@ -8,10 +9,11 @@ export default function MainMenu() {
   const [mode, setMode] = useState('pvp')
   const [difficulty, setDifficulty] = useState('easy')
   const [timerMode, setTimerMode] = useState('none')
+  const [showSettings, setShowSettings] = useState(false)
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-auto z-10 bg-black/40">
-      <div className="wooden-panel w-[400px] flex flex-col gap-6">
+    <div className="overlay-backdrop absolute inset-0 flex items-center justify-center pointer-events-auto z-10 bg-black/40">
+      <div className="panel-pop wooden-panel w-[400px] flex flex-col gap-6">
         <h1 className="text-4xl text-center mb-4 text-[#F5DEB3]">Chess 3D</h1>
         
         <div className="flex flex-col gap-4 font-body text-lg">
@@ -44,10 +46,12 @@ export default function MainMenu() {
           </div>
         </div>
 
-        <div className="mt-6 flex justify-center">
+        <div className="mt-6 flex justify-center gap-4">
           <WoodenButton onClick={() => startGame(mode, difficulty, timerMode)}>Start Game</WoodenButton>
+          <WoodenButton onClick={() => setShowSettings(true)}>Settings</WoodenButton>
         </div>
       </div>
+      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
     </div>
   )
 }

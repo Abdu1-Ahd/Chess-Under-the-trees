@@ -1,9 +1,11 @@
 import useGameStore from '../store/useGameStore'
+import { useAudio } from './useAudio'
 
 export function useChess() {
   const chess = useGameStore(s => s.chess)
   const selectedSquare = useGameStore(s => s.selectedSquare)
   const turn = useGameStore(s => s.turn)
+  const { playSound } = useAudio()
 
   const handleSquareClick = (square) => {
     // Get piece at clicked square
@@ -71,6 +73,14 @@ export function useChess() {
           } else {
             newCapturedBlack.push(result.captured)
           }
+        }
+
+        if (chess.inCheck()) {
+          playSound('check')
+        } else if (result.captured) {
+          playSound('capture')
+        } else {
+          playSound('move')
         }
 
         useGameStore.setState({

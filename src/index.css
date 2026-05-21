@@ -26,14 +26,61 @@ html, body, #root {
   background-color: #000;
 }
 
+/* ── Wooden Panel ── */
 .wooden-panel {
   background-image: var(--wood-grain-url);
   background-size: cover;
   background-color: var(--wood-dark);
-  border: 3px solid var(--wood-light);
+  border: 2px solid var(--wood-highlight);
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow-deep), inset 0 1px 0 rgba(255,255,255,0.1);
+  box-shadow: var(--shadow-deep), inset 0 1px 0 rgba(255,255,255,0.08);
   padding: 24px;
   color: var(--text-carved);
   font-family: var(--font-display);
+  backdrop-filter: blur(4px);
 }
+
+/* ── Entrance Animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Overlay backdrop */
+.overlay-backdrop {
+  animation: fadeIn 0.25s ease both;
+}
+
+/* Panel pop */
+.panel-pop {
+  animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* HUD elements slide up */
+.hud-slide {
+  animation: slideUp 0.35s ease both;
+}
+
+/* Turn indicator pulse */
+@keyframes turnPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200,134,74,0.6); }
+  50%       { box-shadow: 0 0 0 6px rgba(200,134,74,0); }
+}
+
+.turn-active {
+  animation: turnPulse 1.8s ease-in-out infinite;
+}
+
+/* Scrollbar hide globally */
+* { scrollbar-width: none; }
+*::-webkit-scrollbar { display: none; }

@@ -1,4 +1,6 @@
+import { Chess } from 'chess.js'
 import React from 'react'
+import { Text } from '@react-three/drei'
 import { FallbackMaterial } from './Environment'
 import useGameStore from '../store/useGameStore'
 import Piece from './Piece'
@@ -13,6 +15,8 @@ export default function Board() {
   const validMoves = useGameStore(s => s.validMoves)
   const inCheck = useGameStore(s => s.inCheck)
   const turn = useGameStore(s => s.turn)
+  const screen = useGameStore(s => s.screen)
+  const reviewIndex = useGameStore(s => s.reviewIndex)
   
   const { handleSquareClick } = useChess()
 
@@ -20,7 +24,16 @@ export default function Board() {
   const pieces = []
   const highlights = []
   
-  const boardState = chess.board()
+  let boardState = chess.board()
+
+  if (screen === 'review') {
+    const tempChess = new Chess()
+    const history = chess.history({ verbose: true })
+    for (let i = 0; i < reviewIndex; i++) {
+      tempChess.move(history[i])
+    }
+    boardState = tempChess.board()
+  }
   
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
@@ -37,7 +50,10 @@ export default function Board() {
           position={[x, 0, z]} 
           castShadow 
           receiveShadow
-          onClick={(e) => { e.stopPropagation(); handleSquareClick(square) }}
+          onClick={(e) => { 
+            e.stopPropagation(); 
+            if (screen === 'game') handleSquareClick(square) 
+          }}
         >
           <boxGeometry args={[1, 0.1, 1]} />
           {isLight ? (
@@ -84,6 +100,49 @@ export default function Board() {
     }
   }
 
+  // Coordinate labels
+  const files = ['a','b','c','d','e','f','g','h']
+  const ranks = ['8','7','6','5','4','3','2','1']
+  const coordLabels = []
+
+  files.forEach((file, i) => {
+    const x = i - 3.5
+    // Bottom rail file labels (white side)
+    coordLabels.push(
+      <Text
+        key={`file-b-${file}`}
+        position={[x, 0.16, 4.5]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        fontSize={0.28}
+        color="#F5DEB3"
+        anchorX="center"
+        anchorY="middle"
+        font="https://fonts.gstatic.com/s/cinzel/v23/8vIJ7ww63mVu7gt79mT7.woff"
+      >
+        {file}
+      </Text>
+    )
+  })
+
+  ranks.forEach((rank, i) => {
+    const z = i - 3.5
+    // Left rail rank labels
+    coordLabels.push(
+      <Text
+        key={`rank-l-${rank}`}
+        position={[-4.5, 0.16, z]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        fontSize={0.28}
+        color="#F5DEB3"
+        anchorX="center"
+        anchorY="middle"
+        font="https://fonts.gstatic.com/s/cinzel/v23/8vIJ7ww63mVu7gt79mT7.woff"
+      >
+        {rank}
+      </Text>
+    )
+  })
+
   return (
     <group>
       {/* 8x8 Squares */}
@@ -94,6 +153,9 @@ export default function Board() {
 
       {/* Pieces */}
       {pieces}
+
+      {/* Coordinate Labels */}
+      {coordLabels}
 
       {/* Board Border Rails */}
       {/* Border thickness: 1 unit on each side. Total board width is 8. Border makes it 10x10. */}

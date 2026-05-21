@@ -6,9 +6,17 @@ import EndScreen from './ui/EndScreen'
 import ReviewMode from './ui/ReviewMode'
 import PromotionPicker from './ui/PromotionPicker'
 import ChessScene from './scene/ChessScene'
+import { useAI } from './hooks/useAI'
+import { useTimer } from './hooks/useTimer'
 
 export default function App() {
   const screen = useGameStore((state) => state.screen)
+  
+  // Initialize AI hook
+  useAI()
+  
+  // Initialize Timer hook
+  useTimer()
 
   return (
     <>
