@@ -4,6 +4,7 @@ import HUD from './ui/HUD'
 import PauseMenu from './ui/PauseMenu'
 import EndScreen from './ui/EndScreen'
 import ReviewMode from './ui/ReviewMode'
+import PromotionPicker from './ui/PromotionPicker'
 import ChessScene from './scene/ChessScene'
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
         {screen === 'paused' && <PauseMenu />}
         {screen === 'ended' && <EndScreen />}
         {screen === 'review' && <ReviewMode />}
+        <PromotionPicker />
       </div>
     </>
   )

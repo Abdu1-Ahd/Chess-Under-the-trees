@@ -32,10 +32,16 @@ export function useChess() {
 
     // Attempt to move
     const validMoves = useGameStore.getState().validMoves
-    const move = validMoves.find(m => m.to === square)
+    const validMove = validMoves.find(m => m.to === square)
+    const isPromotion = validMoves.some(m => m.to === square && m.promotion)
     
-    if (move) {
-      makeMove(selectedSquare, square, move.promotion ? 'q' : undefined)
+    if (isPromotion) {
+      useGameStore.setState({ promotionPending: { from: selectedSquare, to: square, color: turn } })
+      return
+    }
+
+    if (validMove) {
+      makeMove(selectedSquare, square)
     } else {
       // Deselect on invalid move click
       useGameStore.setState({ selectedSquare: null, validMoves: [] })
@@ -54,13 +60,29 @@ export function useChess() {
     try {
       const result = chess.move({ from, to, promotion })
       if (result) {
+        const state = useGameStore.getState()
+        const newCapturedWhite = [...state.capturedByWhite]
+        const newCapturedBlack = [...state.capturedByBlack]
+        const newHistory = [...state.moveHistory, result.san]
+        
+        if (result.captured) {
+          if (result.color === 'w') {
+            newCapturedWhite.push(result.captured)
+          } else {
+            newCapturedBlack.push(result.captured)
+          }
+        }
+
         useGameStore.setState({
           fen: chess.fen(),
           turn: chess.turn(),
           selectedSquare: null,
           validMoves: [],
           inCheck: chess.inCheck(),
-          gameResult: chess.isGameOver() ? getGameResult() : null
+          gameResult: chess.isGameOver() ? getGameResult() : null,
+          capturedByWhite: newCapturedWhite,
+          capturedByBlack: newCapturedBlack,
+          moveHistory: newHistory
         })
       }
     } catch (e) {

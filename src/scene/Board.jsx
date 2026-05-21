@@ -62,7 +62,7 @@ export default function Board() {
       const piece = boardState[row][col]
       if (piece) {
         pieces.push(
-          <Piece key={`p-${square}`} type={piece.type} color={piece.color} position={pos} />
+          <Piece key={`p-${square}`} square={square} type={piece.type} color={piece.color} position={pos} />
         )
         // Highlight check
         if (inCheck && piece.type === 'k' && piece.color === turn) {
