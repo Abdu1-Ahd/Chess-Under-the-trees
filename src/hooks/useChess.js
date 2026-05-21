@@ -1,11 +1,11 @@
 import useGameStore from '../store/useGameStore'
-import { useAudio } from './useAudio'
+import { useSound } from './useSound'
 
 export function useChess() {
   const chess = useGameStore(s => s.chess)
   const selectedSquare = useGameStore(s => s.selectedSquare)
   const turn = useGameStore(s => s.turn)
-  const { playSound } = useAudio()
+  const { playSound } = useSound()
 
   const handleSquareClick = (square) => {
     // Get piece at clicked square
@@ -63,6 +63,7 @@ export function useChess() {
       const result = chess.move({ from, to, promotion })
       if (result) {
         const state = useGameStore.getState()
+        state.updateIdMapForMove(result)
         const newCapturedWhite = [...state.capturedByWhite]
         const newCapturedBlack = [...state.capturedByBlack]
         const newHistory = [...state.moveHistory, result.san]
@@ -83,30 +84,35 @@ export function useChess() {
           playSound('move')
         }
 
+        let newGameResult = null
+        if (chess.isGameOver()) {
+          if (chess.isCheckmate()) {
+            newGameResult = { winner: chess.turn() === 'w' ? 'b' : 'w', reason: 'checkmate' }
+          } else if (chess.isStalemate()) {
+            newGameResult = { winner: null, reason: 'stalemate' }
+          } else if (chess.isDraw() || chess.isThreefoldRepetition() || chess.isInsufficientMaterial()) {
+            newGameResult = { winner: null, reason: 'draw' }
+          } else {
+            newGameResult = { winner: null, reason: 'ended' }
+          }
+        }
+
         useGameStore.setState({
           fen: chess.fen(),
           turn: chess.turn(),
           selectedSquare: null,
           validMoves: [],
           inCheck: chess.inCheck(),
-          gameResult: chess.isGameOver() ? getGameResult() : null,
+          gameResult: newGameResult,
           capturedByWhite: newCapturedWhite,
           capturedByBlack: newCapturedBlack,
-          moveHistory: newHistory
+          moveHistory: newHistory,
+          ...(newGameResult ? { screen: 'ended' } : {})
         })
       }
     } catch (e) {
       console.error("Invalid move", e)
     }
-  }
-
-  const getGameResult = () => {
-    if (chess.isCheckmate()) return 'checkmate'
-    if (chess.isDraw()) return 'draw'
-    if (chess.isStalemate()) return 'stalemate'
-    if (chess.isThreefoldRepetition()) return 'repetition'
-    if (chess.isInsufficientMaterial()) return 'insufficient'
-    return 'ended'
   }
 
   return { handleSquareClick, makeMove }

@@ -92,14 +92,16 @@ export default function MainMenu() {
               textShadow: '2px 2px 6px rgba(0,0,0,0.8)',
             }}
           >
-            CHESS 3D
+            {showSettings ? 'SETTINGS' : 'Chess Under The Tree'}
           </h1>
 
           {/* ── Divider ── */}
           <hr style={{ border: 'none', borderTop: '1px solid var(--wood-light)', margin: '0 0 20px 0' }} />
 
-          {/* ── Mode section ── */}
-          <div style={{ marginBottom: '16px' }}>
+          {!showSettings ? (
+            <>
+              {/* ── Mode section ── */}
+              <div style={{ marginBottom: '16px' }}>
             <div
               style={{
                 fontFamily: 'var(--font-display)',
@@ -272,10 +274,12 @@ export default function MainMenu() {
               Settings
             </div>
           </div>
+            </>
+          ) : (
+            <SettingsPanel onClose={() => setShowSettings(false)} />
+          )}
         </div>
       </div>
-
-      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
     </div>
   )
 }

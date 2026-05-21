@@ -5,26 +5,29 @@ import * as THREE from 'three'
 export function useCamera() {
   const turn = useGameStore(s => s.turn)
   const cameraLocked = useGameStore(s => s.cameraLocked)
+  const gameMode = useGameStore(s => s.gameMode)
 
   const state = useRef({
     isTransitioning: false,
     t: 1,
-    startPos: new THREE.Vector3(0, 5, 9),
-    endPos: new THREE.Vector3(0, 5, 9),
-    controlPos: new THREE.Vector3(0, 5, 9),
-    currentTarget: new THREE.Vector3(0, 5, 9)
+    startPos: new THREE.Vector3(0, 9, 11),
+    endPos: new THREE.Vector3(0, 9, 11),
+    controlPos: new THREE.Vector3(0, 9, 11),
+    currentTarget: new THREE.Vector3(0, 9, 11)
   })
 
   useEffect(() => {
     const s = state.current
-    let targetX = 0, targetY = 5, targetZ = 9
+    let targetX = 0, targetY = 9, targetZ = 11
     
     if (cameraLocked) {
-      targetY = 12
+      targetY = 16
       targetZ = 0.01 // Slight offset to prevent up-vector flipping when looking straight down
     } else {
-      if (turn === 'b') {
-        targetZ = -9
+      if (gameMode === 'pvp') {
+        if (turn === 'b') {
+          targetZ = -11
+        }
       }
     }
 
@@ -46,7 +49,7 @@ export function useCamera() {
         s.controlPos.y += 2
       }
     }
-  }, [turn, cameraLocked])
+  }, [turn, cameraLocked, gameMode])
 
   const getCameraPosition = (delta) => {
     const s = state.current

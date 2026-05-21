@@ -17,6 +17,8 @@ export default function Board() {
   const turn = useGameStore(s => s.turn)
   const screen = useGameStore(s => s.screen)
   const reviewIndex = useGameStore(s => s.reviewIndex)
+  const pieceIdMap = useGameStore(s => s.pieceIdMap)
+  const reviewPieceIdMap = useGameStore(s => s.reviewPieceIdMap)
   
   const { handleSquareClick } = useChess()
 
@@ -24,15 +26,17 @@ export default function Board() {
   const pieces = []
   const highlights = []
   
+  const activeIdMap = screen === 'review' ? reviewPieceIdMap : pieceIdMap
+
   let boardState = chess.board()
 
   if (screen === 'review') {
-    const tempChess = new Chess()
+    const tempChessReview = new Chess()
     const history = chess.history({ verbose: true })
     for (let i = 0; i < reviewIndex; i++) {
-      tempChess.move(history[i])
+      tempChessReview.move(history[i])
     }
-    boardState = tempChess.board()
+    boardState = tempChessReview.board()
   }
   
   for (let row = 0; row < 8; row++) {
@@ -40,45 +44,56 @@ export default function Board() {
       const isLight = (row + col) % 2 !== 0
       
       const square = String.fromCharCode(col + 97) + (8 - row)
-      const x = col - 3.5
-      const z = 3.5 - row
       const pos = squareToPosition(square)
+      const x = pos[0]
+      const z = pos[2]
       
       squares.push(
-        <mesh 
-          key={`sq-${square}`} 
-          position={[x, 0, z]} 
-          castShadow 
-          receiveShadow
-          onClick={(e) => { 
-            e.stopPropagation(); 
-            if (screen === 'game') handleSquareClick(square) 
-          }}
-        >
-          <boxGeometry args={[1, 0.1, 1]} />
-          {isLight ? (
-            <FallbackMaterial 
-              url="/textures/wood-light.jpg"
-              fallbackColor="#C8A882"
-              roughness={0.4}
-              metalness={0.05}
-            />
-          ) : (
-            <FallbackMaterial 
-              url="/textures/wood-dark.jpg"
-              fallbackColor="#5C3317"
-              roughness={0.5}
-              metalness={0.05}
-            />
-          )}
-        </mesh>
+        <group key={`sq-group-${square}`}>
+          <mesh 
+            key={`sq-${square}`} 
+            position={[x, 0, z]} 
+            castShadow 
+            receiveShadow
+          >
+            <boxGeometry args={[1, 0.1, 1]} />
+            {isLight ? (
+              <FallbackMaterial 
+                url="/textures/wood-light.jpg"
+                fallbackColor="#C8A882"
+                roughness={0.4}
+                metalness={0.05}
+              />
+            ) : (
+              <FallbackMaterial 
+                url="/textures/wood-dark.jpg"
+                fallbackColor="#5C3317"
+                roughness={0.5}
+                metalness={0.05}
+              />
+            )}
+          </mesh>
+          <mesh
+            name={square}
+            position={[x, 0.15, z]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              if (screen === 'game') handleSquareClick(e.object.name) 
+            }}
+          >
+            <planeGeometry args={[1, 1]} />
+            <meshBasicMaterial visible={false} />
+          </mesh>
+        </group>
       )
       
       
       const piece = boardState[row][col]
-      if (piece) {
+      if (piece !== null) {
+        const stableId = activeIdMap[square] || `${piece.color}${piece.type}${square}`
         pieces.push(
-          <Piece key={`p-${square}`} square={square} type={piece.type} color={piece.color} position={pos} />
+          <Piece key={stableId} square={square} type={piece.type} color={piece.color} position={pos} />
         )
         // Highlight check
         if (inCheck && piece.type === 'k' && piece.color === turn) {
@@ -111,13 +126,11 @@ export default function Board() {
     coordLabels.push(
       <Text
         key={`file-b-${file}`}
-        position={[x, 0.16, 4.5]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        fontSize={0.28}
-        color="#F5DEB3"
+        position={[x, 0.2, 4.2]}
+        fontSize={0.22}
+        color="#8B7355"
         anchorX="center"
         anchorY="middle"
-        font="https://fonts.gstatic.com/s/cinzel/v23/8vIJ7ww63mVu7gt79mT7.woff"
       >
         {file}
       </Text>
@@ -130,13 +143,11 @@ export default function Board() {
     coordLabels.push(
       <Text
         key={`rank-l-${rank}`}
-        position={[-4.5, 0.16, z]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        fontSize={0.28}
-        color="#F5DEB3"
+        position={[-4.2, 0.2, z]}
+        fontSize={0.22}
+        color="#8B7355"
         anchorX="center"
         anchorY="middle"
-        font="https://fonts.gstatic.com/s/cinzel/v23/8vIJ7ww63mVu7gt79mT7.woff"
       >
         {rank}
       </Text>
