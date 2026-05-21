@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.png" alt="Chess Under The Tree Logo" width="160" height="160" />
+  <img src="logo.png" alt="Chess Under The Tree Logo" width="320" height="320" />
 </p>
 
 # Chess Under The Tree
