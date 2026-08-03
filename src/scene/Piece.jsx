@@ -97,3 +97,5 @@ export default function Piece({ type, color, position, square, isCaptured = fals
     </group>
   )
 }
+
+// session:505f51b1
