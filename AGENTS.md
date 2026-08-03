@@ -11,3 +11,5 @@
 - Zustand store is the only place game state lives. No useState for game data.
 - Spawn no more than 2 parallel subagents at any time.
 - After each phase from PRD Section 15, stop and run the verification step before proceeding.
+
+<!-- session:926dbfe9 -->

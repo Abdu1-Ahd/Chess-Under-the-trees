@@ -78,3 +78,5 @@ export function useCamera() {
 
   return { getCameraPosition }
 }
+
+// session:926dbfe9b
