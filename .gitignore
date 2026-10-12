@@ -9,6 +9,8 @@ build/
 .idea/
 *.suo
 *.user
+.code-review-graph/
+
 
 # Dependencies
 node_modules/
@@ -29,3 +31,12 @@ npm-debug.log*
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Vite cache
+.vite/
+
+# Antigravity agent config
+.antigravity/
+.antigravityrules
+
+
